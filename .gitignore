@@ -1,0 +1,72 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+/.Spotlight-V100
+/.Trashes
+/.fseventsd
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# Virtual environment / env files
+.env
+.env.*
+secrets.json
+
+# Build / distribution
+build/
+dist/
+*.egg
+*.egg-info/
+
+# Testing / coverage
+.pytest_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Django / databases / uploads
+db.sqlite3
+*.sqlite3
+*.db
+media/
+staticfiles/
+
+# Logs
+*.log
+
+# OS thumbnails / temp
+Thumbs.db
+ehthumbs.db
+*.swp
+*~
+._*
