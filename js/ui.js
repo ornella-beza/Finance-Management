@@ -1,3 +1,5 @@
+import { formatCurrency, getCurrencyPreference } from './settings.js';
+
 export const renderLogin = () => {
     return `
         <div class="auth-wrapper">
@@ -52,6 +54,12 @@ export const renderLogin = () => {
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </div>
                             <input type="password" id="password" class="input-field has-icon" placeholder="••••••••" required>
+                            <button type="button" class="password-toggle" id="toggle-password-login" aria-label="Toggle password visibility">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Sign In</button>
@@ -136,6 +144,12 @@ export const renderSignup = () => {
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </div>
                             <input type="password" id="password" class="input-field has-icon" placeholder="••••••••" minlength="8" required>
+                            <button type="button" class="password-toggle" id="toggle-password-signup" aria-label="Toggle password visibility">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
                         </div>
                         <p class="password-hint">Password must be at least 8 characters long</p>
                     </div>
@@ -191,6 +205,8 @@ export const renderDashboard = (user) => {
 };
 
 export const renderDashboardContent = (transactions, user) => {
+    const currency = getCurrencyPreference();
+    
     // Calculate stats
     const totalIncome = transactions
         .filter(t => t.type === 'income')
@@ -217,7 +233,7 @@ export const renderDashboardContent = (transactions, user) => {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     </div>
                 </div>
-                <div class="stats-value-large">$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div class="stats-value-large">${formatCurrency(balance, currency)}</div>
             </div>
             <div class="card stats-card-large">
                 <div class="stats-card-header">
@@ -226,7 +242,7 @@ export const renderDashboardContent = (transactions, user) => {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                     </div>
                 </div>
-                <div class="stats-value-large">$${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div class="stats-value-large">${formatCurrency(totalIncome, currency)}</div>
             </div>
             <div class="card stats-card-large">
                 <div class="stats-card-header">
@@ -235,7 +251,7 @@ export const renderDashboardContent = (transactions, user) => {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                     </div>
                 </div>
-                <div class="stats-value-large">$${totalExpense.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div class="stats-value-large">${formatCurrency(totalExpense, currency)}</div>
             </div>
         </div>
 
@@ -275,7 +291,7 @@ export const renderDashboardContent = (transactions, user) => {
                     </div>
                     <div class="t-card-right">
                         <div class="t-card-amount ${t.type}">
-                            ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+                            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount, currency).replace(/^[^\d-]+/, '')}
                         </div>
                         <div class="t-card-date">${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                     </div>
@@ -287,12 +303,25 @@ export const renderDashboardContent = (transactions, user) => {
 };
 
 export const renderAnalytics = (transactions) => {
+    const currency = getCurrencyPreference();
     const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
     const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
     
-    // Mock data for "Top Category"
-    const topCategory = "Food"; // This would be calculated in a real app
-    const topCategoryAmount = 450.00;
+    // Calculate top category by expense amount
+    const categoryTotals = {};
+    transactions.filter(t => t.type === 'expense').forEach(t => {
+        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    });
+    
+    let topCategory = 'N/A';
+    let topCategoryAmount = 0;
+    
+    Object.entries(categoryTotals).forEach(([category, amount]) => {
+        if (amount > topCategoryAmount) {
+            topCategoryAmount = amount;
+            topCategory = category;
+        }
+    });
 
     return `
         <div class="analytics-header">
@@ -303,12 +332,13 @@ export const renderAnalytics = (transactions) => {
         <div class="stats-grid">
             <div class="card stat-card">
                 <div class="flex justify-between items-center">
-                    <span class="stat-label">Top Category</span>
+                    <span class="stat-label">Top Expense Category</span>
                     <div style="width: 32px; height: 32px; background: #E6FFFA; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
                     </div>
                 </div>
-                <span class="stat-value">$${topCategoryAmount.toFixed(2)}</span>
+                <span class="stat-value">${formatCurrency(topCategoryAmount, currency)}</span>
+                <p style="font-size: 0.875rem; color: var(--text-medium); margin-top: 0.5rem;">${topCategory}</p>
             </div>
             <div class="card stat-card">
                 <div class="flex justify-between items-center">
@@ -317,7 +347,7 @@ export const renderAnalytics = (transactions) => {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                     </div>
                 </div>
-                <span class="stat-value">$${totalIncome.toFixed(2)}</span>
+                <span class="stat-value">${formatCurrency(totalIncome, currency)}</span>
             </div>
             <div class="card stat-card">
                 <div class="flex justify-between items-center">
@@ -326,7 +356,7 @@ export const renderAnalytics = (transactions) => {
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                     </div>
                 </div>
-                <span class="stat-value">$${totalExpense.toFixed(2)}</span>
+                <span class="stat-value">${formatCurrency(totalExpense, currency)}</span>
             </div>
         </div>
 
@@ -346,15 +376,15 @@ export const renderAnalytics = (transactions) => {
             <div class="summary-grid">
                 <div class="summary-item">
                     <h4>Savings Rate</h4>
-                    <div class="value green">52%</div>
+                    <div class="value green">${totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0}%</div>
                 </div>
                 <div class="summary-item">
                     <h4>Average Monthly Expense</h4>
-                    <div class="value">$1,767.67</div>
+                    <div class="value">${formatCurrency(totalExpense, currency)}</div>
                 </div>
                 <div class="summary-item">
                     <h4>Average Monthly Income</h4>
-                    <div class="value">$3,490.00</div>
+                    <div class="value">${formatCurrency(totalIncome, currency)}</div>
                 </div>
             </div>
         </div>
@@ -362,6 +392,7 @@ export const renderAnalytics = (transactions) => {
 };
 
 export const renderTransactions = (transactions) => {
+    const currency = getCurrencyPreference();
     return `
         <div class="page-header">
             <h2 class="page-title">Transactions</h2>
@@ -418,7 +449,7 @@ export const renderTransactions = (transactions) => {
                     </div>
                     <div class="t-card-right">
                         <div class="t-card-amount ${t.type}">
-                            ${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}
+                            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount, currency).replace(/^[^\d-]+/, '')}
                         </div>
                         <div class="t-card-date">${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
                     </div>
@@ -539,7 +570,7 @@ export const renderSettings = (user) => {
                 <input type="email" class="input-field readonly" value="${user.email}" readonly>
             </div>
 
-            <button class="btn btn-outline btn-icon-text" style="border: 1px solid var(--border-color);">
+            <button id="change-password-btn" class="btn btn-outline btn-icon-text" style="border: 1px solid var(--border-color);">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 Change Password
             </button>
@@ -550,10 +581,11 @@ export const renderSettings = (user) => {
             
             <div class="input-group">
                 <label class="input-label">Currency</label>
-                <select class="input-field">
+                <select id="currency-select" class="input-field">
                     <option value="USD">US Dollar (USD)</option>
                     <option value="EUR">Euro (EUR)</option>
                     <option value="GBP">British Pound (GBP)</option>
+                    <option value="RWF">Rwandan Franc (RWF)</option>
                 </select>
                 <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">This will be used to format all currency values</p>
             </div>
@@ -563,18 +595,24 @@ export const renderSettings = (user) => {
                     <div class="checkbox-label">Email Notifications</div>
                     <div class="checkbox-desc">Receive updates about your finances</div>
                 </div>
-                <input type="checkbox" class="custom-checkbox" checked>
+                <input type="checkbox" id="email-notifications" class="custom-checkbox" checked>
             </div>
         </div>
 
         <div class="card settings-section">
             <h3 class="settings-section-title">Data Management</h3>
             
-            <button class="btn btn-primary btn-block btn-icon-text" style="justify-content: center;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Export Transactions as CSV
-            </button>
-            <p style="font-size: 0.875rem; color: var(--text-medium); margin-top: 1rem;">Download all your transaction data in CSV format for backup or analysis.</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="export-csv-btn" class="btn btn-primary btn-icon-text" style="flex: 1; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export as CSV
+                </button>
+                <button id="export-pdf-btn" class="btn btn-primary btn-icon-text" style="flex: 1; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Export as PDF
+                </button>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-medium); margin-top: 1rem;">Download all your transaction data in CSV or PDF format for backup or analysis.</p>
         </div>
 
         <div class="card settings-section">
@@ -591,7 +629,7 @@ export const renderSettings = (user) => {
             <h3 class="settings-section-title">Danger Zone</h3>
             <p>These actions cannot be undone. Please proceed with caution.</p>
             
-            <button class="btn-danger-block">
+            <button id="delete-account-btn" class="btn-danger-block">
                 Delete Account
             </button>
         </div>
