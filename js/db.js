@@ -51,6 +51,89 @@ export const subscribeToTransactions = (callback) => {
     });
 };
 
+// Categories Management
+const CATEGORIES_COLLECTION = 'categories';
+
+export const subscribeToCategories = (callback) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(
+        collection(db, CATEGORIES_COLLECTION), 
+        where("userId", "==", user.uid),
+        orderBy("name", "asc")
+    );
+
+    return onSnapshot(q, (snapshot) => {
+        const categories = [];
+        snapshot.forEach((doc) => {
+            categories.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // If no categories exist, initialize defaults
+        if (categories.length === 0) {
+            initializeDefaultCategories(user.uid);
+        } else {
+            callback(categories);
+        }
+    });
+};
+
+export const addCategory = async (category) => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("User not authenticated");
+
+        await addDoc(collection(db, CATEGORIES_COLLECTION), {
+            ...category,
+            userId: user.uid,
+            createdAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Error adding category: ", error);
+        throw error;
+    }
+};
+
+export const updateCategory = async (id, data) => {
+    try {
+        const categoryRef = doc(db, CATEGORIES_COLLECTION, id);
+        await updateDoc(categoryRef, data);
+    } catch (error) {
+        console.error("Error updating category: ", error);
+        throw error;
+    }
+};
+
+export const deleteCategory = async (id) => {
+    try {
+        await deleteDoc(doc(db, CATEGORIES_COLLECTION, id));
+    } catch (error) {
+        console.error("Error deleting category: ", error);
+        throw error;
+    }
+};
+
+const initializeDefaultCategories = async (userId) => {
+    const defaultCategories = [
+        { name: 'Salary', type: 'income', color: '#10B981' },
+        { name: 'Freelance', type: 'income', color: '#3B82F6' },
+        { name: 'Food', type: 'expense', color: '#F59E0B' },
+        { name: 'Transportation', type: 'expense', color: '#EF4444' },
+        { name: 'Entertainment', type: 'expense', color: '#8B5CF6' },
+        { name: 'Utilities', type: 'expense', color: '#6B7280' },
+        { name: 'Other', type: 'expense', color: '#9CA3AF' }
+    ];
+
+    for (const cat of defaultCategories) {
+        await addDoc(collection(db, CATEGORIES_COLLECTION), {
+            ...cat,
+            userId: userId,
+            createdAt: serverTimestamp()
+        });
+    }
+};
+
 export const deleteTransaction = async (id) => {
     try {
         await deleteDoc(doc(db, COLLECTION_NAME, id));
