@@ -165,304 +165,882 @@ export const renderSignup = () => {
 };
 
 export const renderDashboard = (user) => {
+    const userName = user?.displayName?.split(' ')[0] || 'User';
+    const userEmail = user?.email || 'user@example.com';
+    const userInitial = userName.charAt(0).toUpperCase();
+
     return `
         <div class="dashboard-container">
+            <!-- Sidebar -->
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <div class="sidebar-brand">Finance</div>
-                    <div class="sidebar-subtitle">Personal Tracker</div>
+                    <div class="sidebar-logo">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M23 6L13.5 15.5L8.5 10.5L1 18" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 6H23V12" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="sidebar-brand">
+                        <div class="sidebar-brand-name">Finance</div>
+                        <div class="sidebar-subtitle">Personal Tracker</div>
+                    </div>
                 </div>
+                
                 <nav class="nav-links">
-                    <div class="nav-item active" data-page="analytics">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                        Analytics
-                    </div>
-                    <div class="nav-item" data-page="transactions">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                        Transactions
-                    </div>
-                    <div class="nav-item" data-page="dashboard">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        Dashboard
-                    </div>
-                    <div class="nav-item" data-page="settings">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        Settings
-                    </div>
+                    <a href="#" class="nav-item active" data-page="dashboard">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="transactions">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="categories">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                            </svg>
+                        </div>
+                        <span>Categories</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="analytics">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                        </div>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="settings">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <span>Settings</span>
+                    </a>
                 </nav>
-                <div class="user-profile" style="margin-top: auto;">
-                    <button id="logout-btn" class="btn btn-outline btn-block" style="justify-content: flex-start; border: 1px solid var(--border-color);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.75rem;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                        Sign Out
-                    </button>
+                
+                <div class="sidebar-footer">
+                    <a href="#" class="nav-item" id="logout-btn">
+                        <div class="nav-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </div>
+                        <span>Sign Out</span>
+                    </a>
                 </div>
             </aside>
-            <main class="main-content" id="main-view">
-                <!-- Content injected here -->
-            </main>
+            <!-- Main Content Area -->
+            <div class="main-wrapper">
+                <!-- Top Header -->
+                <header class="top-header">
+                    <h1 class="header-title">Dashboard</h1>
+                    
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <span class="user-name">${userName}</span>
+                            <span class="user-email">${userEmail}</span>
+                        </div>
+                        <div class="user-avatar" id="user-menu-btn">
+                            ${userInitial}
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" class="dropdown-item" id="profile-settings">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Profile Settings
+                            </a>
+                            <a href="#" class="dropdown-item" id="account-settings">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                                Account Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item text-danger" id="logout-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Main Content -->
+                <main class="main-content" id="main-view">
+                    <!-- Content will be injected here by JavaScript -->
+                </main>
+            </div>
         </div>
     `;
 };
 
-export const renderDashboardContent = (transactions, user) => {
+export const renderDashboardContent = (transactions = [], user) => {
     const currency = getCurrencyPreference();
     
-    // Calculate stats
-    const totalIncome = transactions
-        .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + t.amount, 0);
+    // Filter transactions for the current month
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
     
-    const totalExpense = transactions
+    const monthlyTransactions = transactions.filter(t => {
+        const transactionDate = t.date.toDate ? t.date.toDate() : new Date(t.date);
+        return (
+            transactionDate.getMonth() === currentMonth && 
+            transactionDate.getFullYear() === currentYear
+        );
+    });
+    
+    // Calculate stats
+    const totalIncome = monthlyTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+    
+    const totalExpense = monthlyTransactions
         .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + t.amount, 0);
+        .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
     
     const balance = totalIncome - totalExpense;
-    const userName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+    
+    // Sort transactions by date (newest first)
+    const sortedTransactions = [...transactions].sort((a, b) => {
+        const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
+        const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
+        return dateB - dateA;
+    });
 
     return `
-        <div class="welcome-section">
-            <h1 class="welcome-title">Welcome back, ${userName}!</h1>
-            <p class="welcome-subtitle">Here's your financial overview for this month</p>
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <!-- Total Balance Card -->
+            <div class="summary-card balance">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="trend-indicator up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                        12.5%
+                    </div>
+                </div>
+                <div class="card-amount">${formatCurrency(balance, currency)}</div>
+                <div class="card-title">Total Balance</div>
+            </div>
+            
+            <!-- Income Card -->
+            <div class="summary-card income">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="trend-indicator up">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5"></line>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                        8.2%
+                    </div>
+                </div>
+                <div class="card-amount">${formatCurrency(totalIncome, currency)}</div>
+                <div class="card-title">This Month Income</div>
+            </div>
+            
+            <!-- Expense Card -->
+            <div class="summary-card expense">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="trend-indicator down">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <polyline points="19 12 12 19 5 12"></polyline>
+                        </svg>
+                        3.7%
+                    </div>
+                </div>
+                <div class="card-amount">${formatCurrency(totalExpense, currency)}</div>
+                <div class="card-title">This Month Expense</div>
+            </div>
         </div>
 
-        <div class="stats-grid" style="margin-bottom: 2rem;">
-            <div class="card stats-card-large">
-                <div class="stats-card-header">
-                    <span class="stats-card-label">Total Balance</span>
-                    <div class="stats-icon-large balance">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    </div>
+        <!-- Balance Trend Chart -->
+        <div class="chart-section">
+            <div class="section-header">
+                <h2 class="section-title">Balance Trend</h2>
+                <div class="time-range-selector">
+                    <button class="time-range-btn active">Week</button>
+                    <button class="time-range-btn">Month</button>
+                    <button class="time-range-btn">Year</button>
                 </div>
-                <div class="stats-value-large">${formatCurrency(balance, currency)}</div>
             </div>
-            <div class="card stats-card-large">
-                <div class="stats-card-header">
-                    <span class="stats-card-label">This Month Income</span>
-                    <div class="stats-icon-large income">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                    </div>
-                </div>
-                <div class="stats-value-large">${formatCurrency(totalIncome, currency)}</div>
-            </div>
-            <div class="card stats-card-large">
-                <div class="stats-card-header">
-                    <span class="stats-card-label">This Month Expense</span>
-                    <div class="stats-icon-large expense">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                    </div>
-                </div>
-                <div class="stats-value-large">${formatCurrency(totalExpense, currency)}</div>
-            </div>
-        </div>
-
-        <div class="chart-container-large">
-            <h3 class="section-title">Balance Trend</h3>
-            <div style="height: 320px; width: 100%;">
+            <div class="chart-container">
                 <canvas id="balanceTrendChart"></canvas>
             </div>
         </div>
 
-        <div class="section-header">
-            <h3 class="section-title">Recent Transactions</h3>
-            <button id="add-transaction-btn" class="btn btn-primary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add Transaction
-            </button>
-        </div>
-
-        <div class="transactions-list">
-            ${transactions.slice(0, 5).map(t => `
-                <div class="transaction-card">
-                    <div class="t-card-left">
-                        <div class="t-card-icon ${t.type}">
-                            ${t.category === 'Salary' || t.category === 'Freelance' ? 
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>' : 
-                                t.category === 'Food' ? 
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3"></path></svg>' :
-                                t.category === 'Transportation' ?
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>' :
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>'
-                            }
+        <!-- Recent Transactions -->
+        <div class="transactions-container">
+            <div class="transactions-header">
+                <h3 class="transactions-title">Recent Transactions</h3>
+                <button id="add-transaction-btn" class="btn btn-primary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add New
+                </button>
+            </div>
+            
+            <div class="transactions-list">
+                ${sortedTransactions.length > 0 ? sortedTransactions.slice(0, 5).map(transaction => {
+                    const isIncome = transaction.type === 'income';
+                    const amount = Number.parseFloat(transaction.amount || 0);
+                    const formattedAmount = formatCurrency(amount, currency);
+                    const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+                    const formattedDate = transactionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    // Map categories to icons and colors
+                    const getCategoryInfo = (category) => {
+                        const categories = {
+                            'Salary': { icon: 'dollar-sign', color: '#10B981' },
+                            'Food': { icon: 'coffee', color: '#F59E0B' },
+                            'Shopping': { icon: 'shopping-bag', color: '#8B5CF6' },
+                            'Transportation': { icon: 'car', color: '#3B82F6' },
+                            'Housing': { icon: 'home', color: '#EC4899' },
+                            'Entertainment': { icon: 'film', color: '#6366F1' },
+                            'Utilities': { icon: 'zap', color: '#F59E0B' },
+                            'Healthcare': { icon: 'heart', color: '#EC4899' },
+                            'Education': { icon: 'book', color: '#8B5CF6' },
+                            'Other': { icon: 'dollar-sign', color: '#6B7280' }
+                        };
+                        return categories[category] || categories['Other'];
+                    };
+                    
+                    const categoryInfo = getCategoryInfo(transaction.category || 'Other');
+                    const amountText = isIncome 
+                        ? `+${formattedAmount.replaceAll(/[^0-9.,-]/g, '')}` 
+                        : `-${formattedAmount.replaceAll(/[^0-9.,-]/g, '')}`;
+                    
+                    return `
+                        <div class="transaction-item" data-id="${transaction.id}">
+                            <div class="transaction-icon" style="background-color: ${categoryInfo.color}10; color: ${categoryInfo.color}">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <use xlink:href="#icon-${categoryInfo.icon}" />
+                                </svg>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-category">${transaction.category || 'Uncategorized'}</div>
+                                <div class="transaction-title">${transaction.description || 'No description'}</div>
+                            </div>
+                            <div class="transaction-amount">
+                                <span class="amount ${isIncome ? 'income' : 'expense'}">${amountText}</span>
+                                <span class="date">${formattedDate}</span>
+                            </div>
                         </div>
-                        <div class="t-card-info">
-                            <h4>${t.description}</h4>
-                            <p>${t.category}</p>
+                    `;
+                }).join('') : `
+                    <div class="empty-transactions">
+                        <div class="empty-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
                         </div>
+                        <h4>No transactions yet</h4>
+                        <p>Add your first transaction to get started</p>
+                        <button id="add-first-transaction" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Transaction
+                        </button>
                     </div>
-                    <div class="t-card-right">
-                        <div class="t-card-amount ${t.type}">
-                            ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount, currency).replace(/^[^\d-]+/, '')}
-                        </div>
-                        <div class="t-card-date">${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                    </div>
+                `}
+            </div>
+            
+            ${sortedTransactions.length > 5 ? `
+                <div class="view-all">
+                    <a href="#" class="view-all-link" data-page="transactions">
+                        View All Transactions
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </a>
                 </div>
-            `).join('')}
-            ${transactions.length === 0 ? '<div style="text-align: center; padding: 2rem; color: var(--text-medium);">No recent transactions</div>' : ''}
+            ` : ''}
         </div>
     `;
 };
 
-export const renderAnalytics = (transactions) => {
+
+export const renderAnalytics = (transactions = []) => {
     const currency = getCurrencyPreference();
-    const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
     
-    // Calculate top category by expense amount
+    // Calculate stats
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    
+    // Filter transactions for current month
+    const monthlyTransactions = transactions.filter(t => {
+        const transactionDate = t.date.toDate ? t.date.toDate() : new Date(t.date);
+        return transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear;
+    });
+    
+    // Calculate totals
+    const totalIncome = monthlyTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number.parseFloat(t.amount || 0), 0);
+    
+    const totalExpense = monthlyTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number.parseFloat(t.amount || 0), 0);
+    
+    const balance = totalIncome - totalExpense;
+    
+    // Calculate category totals
     const categoryTotals = {};
-    transactions.filter(t => t.type === 'expense').forEach(t => {
-        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+    monthlyTransactions
+        .filter(t => t.type === 'expense')
+        .forEach(t => {
+            const category = t.category || 'Other';
+            categoryTotals[category] = (categoryTotals[category] || 0) + Number.parseFloat(t.amount || 0);
+        });
+    
+    // Get top categories
+    const topCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+    
+    // Calculate percentage change from last month
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    
+    const lastMonthTransactions = transactions.filter(t => {
+        const transactionDate = t.date.toDate ? t.date.toDate() : new Date(t.date);
+        return transactionDate.getMonth() === lastMonth && 
+               transactionDate.getFullYear() === lastMonthYear;
     });
     
-    let topCategory = 'N/A';
-    let topCategoryAmount = 0;
+    const lastMonthExpense = lastMonthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number.parseFloat(t.amount || 0), 0);
     
-    Object.entries(categoryTotals).forEach(([category, amount]) => {
-        if (amount > topCategoryAmount) {
-            topCategoryAmount = amount;
-            topCategory = category;
-        }
-    });
-
+    const expenseChange = lastMonthExpense > 0 
+        ? ((totalExpense - lastMonthExpense) / lastMonthExpense) * 100 
+        : 0;
+    
+    // Format currency
+    const format = (amount) => formatCurrency(amount, currency).replace(/[^0-9.,-]/g, '');
+    
     return `
-        <div class="analytics-header">
-            <h2 class="analytics-title">Analytics</h2>
-            <p class="analytics-subtitle">Visualize your spending patterns and financial insights</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="card stat-card">
-                <div class="flex justify-between items-center">
-                    <span class="stat-label">Top Expense Category</span>
-                    <div style="width: 32px; height: 32px; background: #E6FFFA; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        <div class="analytics-page">
+            <div class="analytics-header">
+                <div>
+                    <h1 class="analytics-title">Analytics</h1>
+                    <p class="analytics-subtitle">Track your spending and income patterns</p>
+                </div>
+                <div class="period-selector">
+                    <button class="period-btn ${'month' === 'month' ? 'active' : ''}">Month</button>
+                    <button class="period-btn ${'year' === 'month' ? 'active' : ''}">Year</button>
+                    <button class="period-btn ${'all' === 'month' ? 'active' : ''}">All Time</button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <h3 class="stat-card-title">Total Balance</h3>
+                        <div class="stat-card-icon balance">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value">${formatCurrency(balance, currency)}</div>
+                    <div class="stat-card-change ${balance >= 0 ? 'positive' : 'negative'}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="${balance >= 0 ? '18 15 12 9 6 15' : '6 9l6 6 6-6'}"></polyline>
+                        </svg>
+                        ${Math.abs(balance) > 0 ? '12%' : '0%'} from last month
                     </div>
                 </div>
-                <span class="stat-value">${formatCurrency(topCategoryAmount, currency)}</span>
-                <p style="font-size: 0.875rem; color: var(--text-medium); margin-top: 0.5rem;">${topCategory}</p>
-            </div>
-            <div class="card stat-card">
-                <div class="flex justify-between items-center">
-                    <span class="stat-label">Total Income (YTD)</span>
-                    <div style="width: 32px; height: 32px; background: #E6FFFA; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <h3 class="stat-card-title">Total Income</h3>
+                        <div class="stat-card-icon income">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value">${formatCurrency(totalIncome, currency)}</div>
+                    <div class="stat-card-change positive">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                        ${Math.abs(expenseChange).toFixed(1)}% from last month
                     </div>
                 </div>
-                <span class="stat-value">${formatCurrency(totalIncome, currency)}</span>
-            </div>
-            <div class="card stat-card">
-                <div class="flex justify-between items-center">
-                    <span class="stat-label">Total Expense (YTD)</span>
-                    <div style="width: 32px; height: 32px; background: #FEF2F2; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--danger-color);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <h3 class="stat-card-title">Total Expense</h3>
+                        <div class="stat-card-icon expense">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card-value">${formatCurrency(totalExpense, currency)}</div>
+                    <div class="stat-card-change ${expenseChange >= 0 ? 'negative' : 'positive'}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="${expenseChange >= 0 ? '6 9 12 15 18 9' : '18 15 12 9 6 15'}"></polyline>
+                        </svg>
+                        ${Math.abs(expenseChange).toFixed(1)}% from last month
                     </div>
                 </div>
-                <span class="stat-value">${formatCurrency(totalExpense, currency)}</span>
             </div>
-        </div>
-
-        <div class="charts-grid">
-            <div class="card">
-                <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Income vs Expense</h3>
-                <canvas id="incomeExpenseChart"></canvas>
-            </div>
-            <div class="card">
-                <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Spending by Category</h3>
-                <canvas id="categoryChart"></canvas>
-            </div>
-        </div>
-
-        <div class="summary-section">
-            <h3 style="font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem;">Summary</h3>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <h4>Savings Rate</h4>
-                    <div class="value green">${totalIncome > 0 ? Math.round(((totalIncome - totalExpense) / totalIncome) * 100) : 0}%</div>
-                </div>
-                <div class="summary-item">
-                    <h4>Average Monthly Expense</h4>
-                    <div class="value">${formatCurrency(totalExpense, currency)}</div>
-                </div>
-                <div class="summary-item">
-                    <h4>Average Monthly Income</h4>
-                    <div class="value">${formatCurrency(totalIncome, currency)}</div>
+            
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Income & Expense</h3>
+                        <div class="chart-period-selector">
+                            <button class="period-btn ${'week' === 'week' ? 'active' : ''}">Week</button>
+                            <button class="period-btn ${'month' === 'week' ? 'active' : ''}">Month</button>
+                            <button class="period-btn ${'year' === 'week' ? 'active' : ''}">Year</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart.js will render here -->
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <!-- Categories Section -->
+            <div class="categories-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Categories</h3>
+                        <button class="btn btn-outline btn-sm">View All</button>
+                    </div>
+                    <div class="categories-grid">
+                        ${topCategories.length > 0 ? 
+                            topCategories.map(([category, amount]) => {
+                                const percentage = (amount / totalExpense) * 100 || 0;
+                                const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+                                
+                                return `
+                                    <div class="category-card">
+                                        <div class="category-header">
+                                            <h4 class="category-title">${category}</h4>
+                                            <div class="category-amount">${formatCurrency(amount, currency)}</div>
+                                        </div>
+                                        <div class="category-progress">
+                                            <div class="category-progress-bar" style="width: ${percentage}%; background-color: ${randomColor};"></div>
+                                        </div>
+                                        <div class="category-details">
+                                            <span>${percentage.toFixed(1)}% of total</span>
+                                            <span>${Math.round(percentage / 10)}/10</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')
+                            : '<p>No expense data available</p>'
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="recent-transactions">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Recent Transactions</h3>
+                        <button class="btn btn-outline btn-sm">View All</button>
+                    </div>
+                    <div>
+                        ${monthlyTransactions.length > 0 ? 
+                            monthlyTransactions
+                                .sort((a, b) => {
+                                    const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                                    const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
+                                    return dateB - dateA;
+                                })
+                                .slice(0, 5)
+                                .map(transaction => {
+                                    const isIncome = transaction.type === 'income';
+                                    const amount = Number.parseFloat(transaction.amount || 0);
+                                    const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+                                    const formattedDate = transactionDate.toLocaleDateString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                    });
+                                    
+                                    // Map categories to icons and colors
+                                    const getCategoryInfo = (category) => {
+                                        const categories = {
+                                            'Salary': { icon: 'dollar-sign', color: '#10B981' },
+                                            'Food': { icon: 'coffee', color: '#F59E0B' },
+                                            'Shopping': { icon: 'shopping-bag', color: '#8B5CF6' },
+                                            'Transportation': { icon: 'car', color: '#3B82F6' },
+                                            'Housing': { icon: 'home', color: '#EC4899' },
+                                            'Entertainment': { icon: 'film', color: '#6366F1' },
+                                            'Utilities': { icon: 'zap', color: '#F59E0B' },
+                                            'Healthcare': { icon: 'heart', color: '#EC4899' },
+                                            'Education': { icon: 'book', color: '#8B5CF6' },
+                                            'Other': { icon: 'dollar-sign', color: '#6B7280' }
+                                        };
+                                        return categories[category] || categories['Other'];
+                                    };
+                                    
+                                    const categoryInfo = getCategoryInfo(transaction.category || 'Other');
+                                    const amountText = isIncome 
+                                        ? `+${format(amount)}` 
+                                        : `-${format(amount)}`;
+                                    
+                                    return `
+                                        <div class="transaction-item">
+                                            <div class="transaction-icon" style="background-color: ${categoryInfo.color}10; color: ${categoryInfo.color}">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use xlink:href="#icon-${categoryInfo.icon}" />
+                                                </svg>
+                                            </div>
+                                            <div class="transaction-details">
+                                                <div class="transaction-category">${transaction.category || 'Uncategorized'}</div>
+                                                <div class="transaction-description">${transaction.description || 'No description'}</div>
+                                            </div>
+                                            <div class="transaction-amount ${isIncome ? 'income' : 'expense'}">
+                                                ${amountText}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')
+                            : `
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                </div>
+                                <h4>No transactions found</h4>
+                                <p>Add your first transaction to see analytics</p>
+                            </div>
+                            `
+                        }
+                    </div>
+                </div>
+            </div>
     `;
 };
 
-export const renderTransactions = (transactions) => {
-    const currency = getCurrencyPreference();
-    return `
-        <div class="page-header">
-            <h2 class="page-title">Transactions</h2>
-            <p style="color: var(--text-medium);">View and manage all your financial transactions</p>
-        </div>
 
-        <div class="filters-bar">
-            <div class="filter-group" style="flex: 2;">
-                <label>Search</label>
-                <div class="input-with-icon">
-                    <div class="input-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+export const renderTransactions = (transactions = []) => {
+    const currency = getCurrencyPreference();
+    
+    // Sort transactions by date (newest first)
+    const sortedTransactions = [...transactions].sort((a, b) => {
+        const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
+        const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
+        return dateB - dateA;
+    });
+    
+    return `
+        <div class="transactions-page">
+            <div class="transactions-header">
+                <div>
+                    <h2 class="page-title">Transactions</h2>
+                    <p class="page-subtitle">View and manage your transaction history</p>
+                </div>
+                <button id="add-transaction-btn" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Transaction
+                </button>
+            </div>
+            
+            <div class="transactions-filters">
+                <div class="search-container">
+                    <div class="search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                     </div>
-                    <input type="text" class="input-field has-icon" placeholder="Search transactions...">
+                    <input type="text" id="search-transactions" class="search-input" placeholder="Search transactions...">
+                </div>
+                
+                <div class="filter-group">
+                    <select id="type-filter" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <select id="category-filter" class="filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="food">Food</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="housing">Housing</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <input type="date" id="date-from" class="date-input">
+                    <span class="date-separator">to</span>
+                    <input type="date" id="date-to" class="date-input">
+                </div>
+                
+                <button id="apply-filters" class="btn btn-primary btn-sm">
+                    Apply Filters
+                </button>
+                
+                <button id="reset-filters" class="btn btn-outline btn-sm">
+                    Reset
+                </button>
+            </div>
+
+            <div class="transactions-table-container">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th class="category-col">Category</th>
+                            <th class="description-col">Description</th>
+                            <th class="date-col">Date</th>
+                            <th class="amount-col">Amount</th>
+                            <th class="actions-col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sortedTransactions.length > 0 ? 
+                            sortedTransactions.map(transaction => {
+                                const isIncome = transaction.type === 'income';
+                                const amount = Number.parseFloat(transaction.amount || 0);
+                                const formattedAmount = formatCurrency(amount, currency);
+                                const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+                                const formattedDate = transactionDate.toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                });
+                                
+                                // Map categories to icons and colors
+                                const getCategoryInfo = (category) => {
+                                    const categories = {
+                                        'Salary': { icon: 'dollar-sign', color: '#10B981' },
+                                        'Food': { icon: 'coffee', color: '#F59E0B' },
+                                        'Shopping': { icon: 'shopping-bag', color: '#8B5CF6' },
+                                        'Transportation': { icon: 'car', color: '#3B82F6' },
+                                        'Housing': { icon: 'home', color: '#EC4899' },
+                                        'Entertainment': { icon: 'film', color: '#6366F1' },
+                                        'Utilities': { icon: 'zap', color: '#F59E0B' },
+                                        'Healthcare': { icon: 'heart', color: '#EC4899' },
+                                        'Education': { icon: 'book', color: '#8B5CF6' },
+                                        'Other': { icon: 'dollar-sign', color: '#6B7280' }
+                                    };
+                                    return categories[category] || categories['Other'];
+                                };
+                                
+                                const categoryInfo = getCategoryInfo(transaction.category || 'Other');
+                                const amountText = isIncome 
+                                    ? `+${formattedAmount.replaceAll(/[^0-9.,-]/g, '')}` 
+                                    : `-${formattedAmount.replaceAll(/[^0-9.,-]/g, '')}`;
+                                
+                                return `
+                                    <tr class="transaction-row" data-id="${transaction.id}">
+                                        <td class="category-cell">
+                                            <div class="category-badge" style="background-color: ${categoryInfo.color}10; color: ${categoryInfo.color};">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <use xlink:href="#icon-${categoryInfo.icon}" />
+                                                </svg>
+                                                <span>${transaction.category || 'Uncategorized'}</span>
+                                            </div>
+                                        </td>
+                                        <td class="description-cell">
+                                            <div class="transaction-description">${transaction.description || 'No description'}</div>
+                                        </td>
+                                        <td class="date-cell">${formattedDate}</td>
+                                        <td class="amount-cell ${isIncome ? 'income' : 'expense'}">
+                                            ${amountText}
+                                        </td>
+                                        <td class="actions-cell">
+                                            <button class="btn-icon edit-transaction" data-id="${transaction.id}">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                </svg>
+                                            </button>
+                                            <button class="btn-icon delete-transaction" data-id="${transaction.id}">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')
+                            : `
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                    </div>
+                                    <h4>No transactions found</h4>
+                                    <p>Add your first transaction to get started</p>
+                                    <button id="add-first-transaction" class="btn btn-primary" style="margin-top: 1rem;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                        Add Transaction
+                                    </button>
+                                </td>
+                            </tr>
+                            `
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="pagination-btn" id="prev-page" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    Previous
+                </button>
+                <div class="pagination-pages">
+                    <span class="active">1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>...</span>
+                    <span>10</span>
+                </div>
+                <button class="pagination-btn" id="next-page">
+                    Next
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select id="category-filter" class="input-field">
+                        <option value="all">All Categories</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Food">Food</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <button id="clear-filters-btn" class="btn btn-outline" style="width: 100%; border: 1px solid var(--border-color);">Clear Filters</button>
                 </div>
             </div>
-            <div class="filter-group">
-                <label>Category</label>
-                <select class="input-field">
-                    <option value="All">All Categories</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Food">Food</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Freelance">Freelance</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <button id="add-transaction-btn" class="btn btn-primary" style="height: 42px; margin-bottom: 1px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add Transaction
-            </button>
         </div>
 
-        <div class="transactions-list">
+        <!-- Transactions List -->
+        <div class="transactions-list-container">
             ${transactions.map(t => `
-                <div class="transaction-card">
-                    <div class="t-card-left">
-                        <div class="t-card-icon ${t.type}">
-                            ${t.category === 'Salary' || t.category === 'Freelance' ? 
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>' : 
-                                t.category === 'Food' ? 
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3"></path></svg>' :
-                                t.category === 'Transportation' ?
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>' :
-                                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>'
-                            }
-                        </div>
-                        <div class="t-card-info">
-                            <h4>${t.description}</h4>
-                            <p>${t.category}</p>
+                <div class="transaction-list-item">
+                    <div class="transaction-list-left">
+                        <div class="transaction-dot ${t.type}"></div>
+                        <div class="transaction-list-info">
+                            <div class="transaction-list-name">${t.description}</div>
+                            <div class="transaction-list-meta">
+                                <span class="transaction-list-category">${t.category}</span>
+                                <span class="transaction-list-separator">•</span>
+                                <span class="transaction-list-date">${new Date(t.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="t-card-right">
-                        <div class="t-card-amount ${t.type}">
+                    <div class="transaction-list-right">
+                        <div class="transaction-list-amount ${t.type}">
                             ${t.type === 'income' ? '+' : '-'}${formatCurrency(t.amount, currency).replace(/^[^\d-]+/, '')}
                         </div>
-                        <div class="t-card-date">${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                    </div>
-                    <div class="t-card-actions">
-                        <button class="action-btn view-btn" data-id="${t.id}" title="View Details">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                        <button class="action-btn edit-btn" data-id="${t.id}" title="Edit">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button class="action-btn delete-btn" data-id="${t.id}" title="Delete">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
+                        <div class="transaction-list-badge ${t.type}">
+                            ${t.type === 'income' ? 'income' : 'expense'}
+                        </div>
+                        <div class="transaction-list-actions">
+                            <button class="action-icon-btn edit-transaction-btn" data-id="${t.id}" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                            <button class="action-icon-btn delete-transaction-btn" data-id="${t.id}" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('')}
@@ -471,10 +1049,14 @@ export const renderTransactions = (transactions) => {
     `;
 };
 
-export const renderModal = (transaction = null) => {
+export const renderModal = (transaction = null, categories = []) => {
     const isEdit = !!transaction;
     const type = transaction ? transaction.type : 'expense';
     const date = transaction ? transaction.date : new Date().toISOString().split('T')[0];
+    
+    // Filter categories based on type
+    const incomeCategories = categories.filter(c => c.type === 'income');
+    const expenseCategories = categories.filter(c => c.type === 'expense');
     
     return `
         <div class="modal-overlay" id="transaction-modal">
@@ -496,41 +1078,29 @@ export const renderModal = (transaction = null) => {
 
                         <div class="input-group">
                             <label class="input-label">Amount *</label>
-                            <div class="input-with-icon">
-                                <div class="input-icon" style="color: var(--text-dark); font-weight: 600;">$</div>
-                                <input type="number" name="amount" class="input-field has-icon" placeholder="0.00" step="0.01" required value="${transaction ? transaction.amount : ''}">
-                            </div>
+                            <input type="number" name="amount" class="input-field" placeholder="0.00" step="0.01" required value="${transaction ? transaction.amount : ''}">
                         </div>
 
                         <div class="input-group">
                             <label class="input-label">Category *</label>
-                            <select name="category" class="input-field" required>
-                                <option value="Salary" ${transaction && transaction.category === 'Salary' ? 'selected' : ''}>Salary</option>
-                                <option value="Food" ${transaction && transaction.category === 'Food' ? 'selected' : ''}>Food</option>
-                                <option value="Transportation" ${transaction && transaction.category === 'Transportation' ? 'selected' : ''}>Transportation</option>
-                                <option value="Entertainment" ${transaction && transaction.category === 'Entertainment' ? 'selected' : ''}>Entertainment</option>
-                                <option value="Utilities" ${transaction && transaction.category === 'Utilities' ? 'selected' : ''}>Utilities</option>
-                                <option value="Freelance" ${transaction && transaction.category === 'Freelance' ? 'selected' : ''}>Freelance</option>
-                                <option value="Other" ${transaction && transaction.category === 'Other' ? 'selected' : ''}>Other</option>
+                            <select name="category" class="input-field" id="category-select" required>
+                                <option value="">Select a category</option>
+                                <optgroup label="Expense Categories" id="expense-categories">
+                                    ${expenseCategories.map(c => `<option value="${c.name}" ${transaction && transaction.category === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                                </optgroup>
+                                <optgroup label="Income Categories" id="income-categories">
+                                    ${incomeCategories.map(c => `<option value="${c.name}" ${transaction && transaction.category === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+                                </optgroup>
                             </select>
                         </div>
 
                         <div class="input-group">
                             <label class="input-label">Date *</label>
-                            <div class="input-with-icon">
-                                <div class="input-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                </div>
-                                <input type="date" name="date" class="input-field has-icon" required value="${date}">
-                            </div>
+                            <input type="date" name="date" class="input-field" required value="${date}">
                         </div>
 
                         <div class="input-group">
                             <label class="input-label">Description *</label>
-                            <input type="text" name="description" class="input-field" placeholder="e.g., Grocery shopping, Monthly rent..." required value="${transaction ? transaction.description : ''}">
-                        </div>
-
-                        <div class="input-group">
                             <label class="input-label">Receipt (Optional)</label>
                             <div class="upload-area">
                                 <div class="upload-icon">
@@ -632,6 +1202,127 @@ export const renderSettings = (user) => {
             <button id="delete-account-btn" class="btn-danger-block">
                 Delete Account
             </button>
+        </div>
+    `;
+};
+
+export const renderCategories = (categories) => {
+    const incomeCategories = categories.filter(c => c.type === 'income');
+    const expenseCategories = categories.filter(c => c.type === 'expense');
+
+    return `
+        <div class="categories-container">
+            <div class="page-header">
+                <div>
+                    <h2 class="page-title">Categories</h2>
+                    <p style="color: var(--text-medium); font-size: 0.875rem;">Manage your transaction categories</p>
+                </div>
+                <button id="add-category-btn" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Category
+                </button>
+            </div>
+
+            <div class="categories-grid">
+                <!-- Income Categories -->
+                <div class="category-column">
+                    <h3 class="column-title income">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                        Income Categories (${incomeCategories.length})
+                    </h3>
+                    <div class="category-list">
+                        ${incomeCategories.map(c => `
+                            <div class="category-card">
+                                <div class="category-info">
+                                    <div class="category-dot" style="background-color: ${c.color || '#10B981'}"></div>
+                                    <span class="category-name">${c.name}</span>
+                                    <span class="category-badge income">Income</span>
+                                </div>
+                                <div class="category-actions">
+                                    <button class="icon-btn edit-category-btn" data-id="${c.id}" title="Edit">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </button>
+                                    <button class="icon-btn delete-category-btn" data-id="${c.id}" title="Delete">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Expense Categories -->
+                <div class="category-column">
+                    <h3 class="column-title expense">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                        Expense Categories (${expenseCategories.length})
+                    </h3>
+                    <div class="category-list">
+                        ${expenseCategories.map(c => `
+                            <div class="category-card">
+                                <div class="category-info">
+                                    <div class="category-dot" style="background-color: ${c.color || '#EF4444'}"></div>
+                                    <span class="category-name">${c.name}</span>
+                                    <span class="category-badge expense">Expense</span>
+                                </div>
+                                <div class="category-actions">
+                                    <button class="icon-btn edit-category-btn" data-id="${c.id}" title="Edit">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </button>
+                                    <button class="icon-btn delete-category-btn" data-id="${c.id}" title="Delete">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+export const renderCategoryModal = (category = null) => {
+    const isEdit = !!category;
+    const type = category ? category.type : 'expense';
+    
+    return `
+        <div class="modal-overlay" id="category-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">${isEdit ? 'Edit Category' : 'Add Category'}</h3>
+                        <p style="color: var(--text-medium); font-size: 0.875rem; margin-top: 0.25rem;">${isEdit ? 'Update category details' : 'Create a new category'}</p>
+                    </div>
+                    <button class="close-btn" id="close-category-modal">&times;</button>
+                </div>
+                <form id="category-form" data-mode="${isEdit ? 'edit' : 'add'}" ${isEdit ? `data-id="${category.id}"` : ''}>
+                    <div class="modal-body">
+                        <div class="segmented-control">
+                            <button type="button" class="segment-btn ${type === 'expense' ? 'active' : ''}" data-value="expense">Expense</button>
+                            <button type="button" class="segment-btn ${type === 'income' ? 'active' : ''}" data-value="income">Income</button>
+                        </div>
+                        <input type="hidden" name="type" id="category-type" value="${type}">
+
+                        <div class="input-group">
+                            <label class="input-label">Category Name *</label>
+                            <input type="text" name="name" class="input-field" placeholder="e.g., Groceries, Rent..." required value="${category ? category.name : ''}">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">Color</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="color" name="color" class="color-input" value="${category ? category.color : '#10B981'}" style="width: 50px; height: 40px; border: none; border-radius: 4px; cursor: pointer;">
+                                <span style="color: var(--text-medium); font-size: 0.875rem;">Pick a color for this category</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" id="cancel-category-modal" style="border: 1px solid var(--border-color);">Cancel</button>
+                        <button type="submit" class="btn btn-primary">${isEdit ? 'Save Changes' : 'Add Category'}</button>
+                    </div>
+                </form>
+            </div>
         </div>
     `;
 };

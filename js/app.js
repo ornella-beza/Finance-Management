@@ -1,12 +1,15 @@
 import { registerUser, loginUser, logoutUser, subscribeToAuthChanges, signInWithGoogle, changePassword, deleteUserAccount } from './auth.js';
-import { addTransaction, subscribeToTransactions, deleteTransaction, updateTransaction } from './db.js';
-import { renderLogin, renderSignup, renderDashboard, renderDashboardContent, renderModal } from './ui.js';
+import { addTransaction, subscribeToTransactions, deleteTransaction, updateTransaction, subscribeToCategories, addCategory, updateCategory, deleteCategory } from './db.js';
+import { renderLogin, renderSignup, renderDashboard, renderDashboardContent, renderModal, renderCategories, renderCategoryModal, renderTransactions, renderAnalytics } from './ui.js';
 import { renderCharts } from './charts.js';
-import { exportToCSV, exportToPDF, getCurrencyPreference, saveCurrencyPreference, getEmailNotificationPreference, saveEmailNotificationPreference } from './settings.js';
+import { exportToCSV, exportToPDF, getCurrencyPreference, saveCurrencyPreference, getEmailNotificationPreference, saveEmailNotificationPreference, formatCurrency } from './settings.js';
 
 const app = document.getElementById('app');
 let currentUser = null;
+let currentTransactions = [];
+let currentCategories = [];
 let unsubscribeTransactions = null;
+let unsubscribeCategories = null;
 
 // Routing Logic
 const routes = {
@@ -30,20 +33,13 @@ const routes = {
         if (unsubscribeTransactions) unsubscribeTransactions();
         unsubscribeTransactions = subscribeToTransactions((transactions) => {
             currentTransactions = transactions;
-            // Default to analytics view as per design request (or keep dashboard)
-            // Let's default to Analytics since that's what the user asked for "dashboard analysis"
-            // But the nav says "Analytics" is separate. I'll default to Analytics for now to show the work.
-            // Actually, let's check the active nav item.
-            const activeNav = document.querySelector('.nav-item.active');
-            const page = activeNav ? activeNav.dataset.page : 'analytics'; // Defaulting to analytics to show off the new view
-            
-            // If defaulting to analytics, update nav
-            if (!activeNav) {
-                 const analyticsNav = document.querySelector('[data-page="analytics"]');
-                 if (analyticsNav) analyticsNav.classList.add('active');
-            }
+            updateDashboardView();
+        });
 
-            updateDashboardView(page);
+        if (unsubscribeCategories) unsubscribeCategories();
+        unsubscribeCategories = subscribeToCategories((categories) => {
+            currentCategories = categories;
+            updateDashboardView();
         });
     }
 };
@@ -101,101 +97,101 @@ const setupAuthListeners = () => {
             navigateTo('login');
         });
     }
-
-    // Google Sign-In button
-    const googleBtn = document.querySelector('.btn-google');
-    if (googleBtn) {
-        googleBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
+    
+    // Google Sign In
+    const googleBtns = document.querySelectorAll('.btn-google');
+    googleBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
             try {
                 await signInWithGoogle();
             } catch (error) {
+                console.error(error);
                 alert(error.message);
             }
         });
-    }
-
-    // Password visibility toggle
-    const togglePasswordLogin = document.getElementById('toggle-password-login');
-    const togglePasswordSignup = document.getElementById('toggle-password-signup');
+    });
     
+    // Password Toggle
+    const togglePasswordLogin = document.getElementById('toggle-password-login');
     if (togglePasswordLogin) {
         togglePasswordLogin.addEventListener('click', () => {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            
-            // Toggle eye icon
-            const eyeIcon = togglePasswordLogin.querySelector('.eye-icon');
-            if (type === 'text') {
-                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            const input = document.getElementById('password');
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Eye Off Icon
+                togglePasswordLogin.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
             } else {
-                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-            }
-        });
-    }
-
-    if (togglePasswordSignup) {
-        togglePasswordSignup.addEventListener('click', () => {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            
-            // Toggle eye icon
-            const eyeIcon = togglePasswordSignup.querySelector('.eye-icon');
-            if (type === 'text') {
-                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-            } else {
-                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+                input.type = 'password';
+                // Eye Icon
+                togglePasswordLogin.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
             }
         });
     }
 };
 
 const setupDashboardListeners = () => {
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await logoutUser();
-            } catch (error) {
-                console.error(error);
-            }
-        });
-    }
-
     // Navigation
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
-            navItems.forEach(i => i.classList.remove('active'));
+            navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
-            
-            const page = item.dataset.page;
-            updateDashboardView(page);
+            updateDashboardView(item.dataset.page);
         });
     });
+
+    // Logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                if (unsubscribeTransactions) unsubscribeTransactions();
+                if (unsubscribeCategories) unsubscribeCategories();
+                await logoutUser();
+                currentUser = null;
+                navigateTo('login');
+            } catch (error) {
+                console.error("Logout error:", error);
+            }
+        });
+    }
+
+    // User Dropdown
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!userDropdown.contains(e.target) && !userMenuBtn.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
 };
 
-let currentTransactions = [];
-
-const updateDashboardView = (page) => {
+const updateDashboardView = (page = null) => {
     const mainView = document.getElementById('main-view');
+    const headerTitle = document.getElementById('header-title');
     if (!mainView) return;
 
-    if (page === 'analytics') {
-        import('./ui.js').then(module => {
-            mainView.innerHTML = module.renderAnalytics(currentTransactions);
-            renderCharts(currentTransactions);
-        });
-    } else if (page === 'transactions') {
-        import('./ui.js').then(module => {
-            mainView.innerHTML = module.renderTransactions(currentTransactions);
-            setupTransactionListeners();
-        });
-    } else if (page === 'dashboard') {
-        import('./ui.js').then(module => {
-            mainView.innerHTML = module.renderDashboardContent(currentTransactions, currentUser);
+    // Determine current page if not provided
+    if (!page) {
+        const activeNav = document.querySelector('.nav-item.active');
+        page = activeNav ? activeNav.dataset.page : 'dashboard';
+    }
+
+    // Update Header Title
+    if (headerTitle) {
+        headerTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1);
+    }
+
+    switch(page) {
+        case 'dashboard':
+            mainView.innerHTML = renderDashboardContent(currentTransactions, currentUser);
             // We need to import renderBalanceTrendChart from charts.js
             // Since charts.js is a global script (no export), we assume the function is available globally 
             // OR we need to update charts.js to be a module. 
@@ -204,73 +200,327 @@ const updateDashboardView = (page) => {
             import('./charts.js').then(chartsModule => {
                 chartsModule.renderBalanceTrendChart(currentTransactions);
             });
+            break;
+        case 'transactions':
+            mainView.innerHTML = renderTransactions(currentTransactions);
             setupTransactionListeners();
-        });
-    } else if (page === 'settings') {
-        import('./ui.js').then(module => {
-            mainView.innerHTML = module.renderSettings(currentUser);
-            setupSettingsListeners();
-        });
+            break;
+        case 'categories':
+            mainView.innerHTML = renderCategories(currentCategories);
+            setupCategoryListeners();
+            break;
+        case 'analytics':
+            mainView.innerHTML = renderAnalytics(currentTransactions);
+            // Render charts after DOM is ready
+            setTimeout(() => {
+                renderCharts(currentTransactions);
+            }, 100);
+            break;
+        case 'settings':
+            import('./ui.js').then(module => {
+                if (module.renderSettings) {
+                    mainView.innerHTML = module.renderSettings(currentUser);
+                    setupSettingsListeners();
+                }
+            });
+            break;
     }
 };
 
+const renderTransactionsView = (container) => {
+    // Build the HTML structure using pure DOM manipulation to avoid Vite parser issues
+    const filtersBar = document.createElement('div');
+    filtersBar.className = 'filters-bar';
+    
+    // Search filter
+    const searchGroup = document.createElement('div');
+    searchGroup.className = 'filter-group';
+    searchGroup.style.flex = '2';
+    
+    const searchLabel = document.createElement('label');
+    searchLabel.textContent = 'Search';
+    
+    const inputWithIcon = document.createElement('div');
+    inputWithIcon.className = 'input-with-icon';
+    
+    const inputIcon = document.createElement('div');
+    inputIcon.className = 'input-icon';
+    inputIcon.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'search-input';
+    searchInput.className = 'input-field has-icon';
+    searchInput.placeholder = 'Search transactions...';
+    
+    inputWithIcon.appendChild(inputIcon);
+    inputWithIcon.appendChild(searchInput);
+    searchGroup.appendChild(searchLabel);
+    searchGroup.appendChild(inputWithIcon);
+    
+    // Category filter
+    const categoryGroup = document.createElement('div');
+    categoryGroup.className = 'filter-group';
+    
+    const categoryLabel = document.createElement('label');
+    categoryLabel.textContent = 'Category';
+    
+    const categoryFilter = document.createElement('select');
+    categoryFilter.id = 'category-filter';
+    categoryFilter.className = 'input-field';
+    
+    const allOption = document.createElement('option');
+    allOption.value = 'All';
+    allOption.textContent = 'All Categories';
+    categoryFilter.appendChild(allOption);
+    
+    currentCategories.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.name;
+        option.textContent = c.name;
+        categoryFilter.appendChild(option);
+    });
+    
+    categoryGroup.appendChild(categoryLabel);
+    categoryGroup.appendChild(categoryFilter);
+    
+    // Add transaction button
+    const addBtn = document.createElement('button');
+    addBtn.id = 'add-transaction-btn';
+    addBtn.className = 'btn btn-primary';
+    addBtn.style.height = '42px';
+    addBtn.style.marginBottom = '1px';
+    addBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add Transaction';
+    
+    filtersBar.appendChild(searchGroup);
+    filtersBar.appendChild(categoryGroup);
+    filtersBar.appendChild(addBtn);
+    
+    // Transactions list container
+    const listContainer = document.createElement('div');
+    listContainer.id = 'transactions-list-container';
+    
+    container.innerHTML = '';
+    container.appendChild(filtersBar);
+    container.appendChild(listContainer);
+
+    const renderList = (transactions) => {
+        const listContainer = document.getElementById('transactions-list-container');
+        const currency = getCurrencyPreference();
+        
+        // Clear existing content
+        listContainer.innerHTML = '';
+        
+        if (transactions.length === 0) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.style.textAlign = 'center';
+            emptyDiv.style.padding = '3rem';
+            emptyDiv.style.color = 'var(--text-medium)';
+            emptyDiv.textContent = 'No transactions found';
+            listContainer.appendChild(emptyDiv);
+            return;
+        }
+        
+        // Render each transaction using DOM manipulation
+        transactions.forEach(t => {
+            const category = currentCategories.find(c => c.name === t.category);
+            const color = category ? category.color : (t.type === 'income' ? '#10B981' : '#EF4444');
+            
+            const card = document.createElement('div');
+            card.className = 't-card';
+            
+            // Left section
+            const cardLeft = document.createElement('div');
+            cardLeft.className = 't-card-left';
+            
+            const icon = document.createElement('div');
+            icon.className = 't-card-icon';
+            icon.style.backgroundColor = color + '20';
+            icon.style.color = color;
+            icon.innerHTML = t.type === 'income' ? 
+                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>' : 
+                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>';
+            
+            const info = document.createElement('div');
+            info.className = 't-card-info';
+            const h4 = document.createElement('h4');
+            h4.textContent = t.description;
+            const p = document.createElement('p');
+            p.textContent = t.category;
+            info.appendChild(h4);
+            info.appendChild(p);
+            
+            cardLeft.appendChild(icon);
+            cardLeft.appendChild(info);
+            
+            // Right section
+            const cardRight = document.createElement('div');
+            cardRight.className = 't-card-right';
+            
+            const amount = document.createElement('div');
+            amount.className = 't-card-amount ' + t.type;
+            amount.textContent = (t.type === 'income' ? '+' : '-') + formatCurrency(t.amount, currency).replace(/^[^\d-]+/, '');
+            
+            const date = document.createElement('div');
+            date.className = 't-card-date';
+            date.textContent = new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            cardRight.appendChild(amount);
+            cardRight.appendChild(date);
+            
+            // Actions section
+            const actions = document.createElement('div');
+            actions.className = 't-card-actions';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'action-btn edit-btn';
+            editBtn.dataset.id = t.id;
+            editBtn.title = 'Edit';
+            editBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'action-btn delete-btn';
+            deleteBtn.dataset.id = t.id;
+            deleteBtn.title = 'Delete';
+            deleteBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>';
+            
+            actions.appendChild(editBtn);
+            actions.appendChild(deleteBtn);
+            
+            // Assemble card
+            card.appendChild(cardLeft);
+            card.appendChild(cardRight);
+            card.appendChild(actions);
+            
+            listContainer.appendChild(card);
+        });
+    };
+
+    renderList(currentTransactions);
+};
+
 const setupTransactionListeners = () => {
+    // Add Transaction Button
     const addBtn = document.getElementById('add-transaction-btn');
     if (addBtn) {
         addBtn.addEventListener('click', () => {
-            import('./ui.js').then(module => {
-                const modalHtml = module.renderModal();
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-                setupModalListeners();
+            document.body.insertAdjacentHTML('beforeend', renderModal(null, currentCategories));
+            setupModalListeners();
+        });
+    }
+
+    // Export CSV Button
+    const exportBtn = document.getElementById('export-csv-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            import('./settings.js').then(module => {
+                module.exportToCSV(currentTransactions);
             });
         });
     }
 
-    // ... existing delete listeners ...
-    const transactionList = document.querySelector('.transactions-list');
-    if (transactionList) {
-        transactionList.addEventListener('click', async (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
-            const editBtn = e.target.closest('.edit-btn');
-            const viewBtn = e.target.closest('.view-btn');
+    // Search and Filters
+    const searchInput = document.getElementById('search-transactions');
+    const typeFilter = document.getElementById('type-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
 
-            if (deleteBtn) {
-                const id = deleteBtn.dataset.id;
-                if (confirm('Are you sure you want to delete this transaction?')) {
-                    try {
-                        await deleteTransaction(id);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
-            } else if (editBtn) {
-                const id = editBtn.dataset.id;
-                const transaction = currentTransactions.find(t => t.id === id);
-                if (transaction) {
-                    import('./ui.js').then(module => {
-                        const modalHtml = module.renderModal(transaction);
-                        document.body.insertAdjacentHTML('beforeend', modalHtml);
-                        setupModalListeners();
-                    });
-                }
-            } else if (viewBtn) {
-                const id = viewBtn.dataset.id;
-                const transaction = currentTransactions.find(t => t.id === id);
-                if (transaction) {
-                    alert(`Transaction Details:\n\nDescription: ${transaction.description}\nAmount: $${transaction.amount}\nCategory: ${transaction.category}\nDate: ${transaction.date}\nType: ${transaction.type}`);
+    const filterTransactions = () => {
+        const query = searchInput ? searchInput.value.toLowerCase() : '';
+        const type = typeFilter ? typeFilter.value : 'all';
+        const category = categoryFilter ? categoryFilter.value : 'all';
+
+        const filtered = currentTransactions.filter(t => {
+            const matchesSearch = !query || t.description.toLowerCase().includes(query);
+            const matchesType = type === 'all' || t.type === type;
+            const matchesCategory = category === 'all' || t.category === category;
+            return matchesSearch && matchesType && matchesCategory;
+        });
+
+        // Re-render transactions list with filtered data
+        const mainView = document.getElementById('main-view');
+        if (mainView) {
+            mainView.innerHTML = renderTransactions(filtered);
+            setupTransactionListeners(); // Re-setup listeners after re-render
+        }
+    };
+
+    if (searchInput) searchInput.addEventListener('input', filterTransactions);
+    if (typeFilter) typeFilter.addEventListener('change', filterTransactions);
+    if (categoryFilter) categoryFilter.addEventListener('change', filterTransactions);
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', () => {
+            if (searchInput) searchInput.value = '';
+            if (typeFilter) typeFilter.value = 'all';
+            if (categoryFilter) categoryFilter.value = 'all';
+            filterTransactions();
+        });
+    }
+
+    // Edit and Delete buttons for transaction items
+    document.querySelectorAll('.edit-transaction-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const transaction = currentTransactions.find(t => t.id === id);
+            document.body.insertAdjacentHTML('beforeend', renderModal(transaction, currentCategories));
+            setupModalListeners();
+        });
+    });
+
+    document.querySelectorAll('.delete-transaction-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                const id = btn.dataset.id;
+                try {
+                    await deleteTransaction(id);
+                } catch (error) {
+                    alert('Error deleting transaction');
                 }
             }
         });
-    }
+    });
 };
 
-const setupModalListeners = () => {
-    const modal = document.getElementById('transaction-modal');
-    const closeBtn = document.getElementById('close-modal');
-    const cancelBtn = document.getElementById('cancel-modal');
-    const form = document.getElementById('transaction-form');
-    const segmentBtns = document.querySelectorAll('.segment-btn');
-    const typeInput = document.getElementById('transaction-type');
+const setupCategoryListeners = () => {
+    // Add Category
+    document.getElementById('add-category-btn').addEventListener('click', () => {
+        document.body.insertAdjacentHTML('beforeend', renderCategoryModal());
+        setupCategoryModalListeners();
+    });
+
+    // Edit Category
+    document.querySelectorAll('.edit-category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const category = currentCategories.find(c => c.id === id);
+            document.body.insertAdjacentHTML('beforeend', renderCategoryModal(category));
+            setupCategoryModalListeners();
+        });
+    });
+
+    // Delete Category
+    document.querySelectorAll('.delete-category-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete this category?')) {
+                const id = btn.dataset.id;
+                try {
+                    await deleteCategory(id);
+                } catch (error) {
+                    alert('Error deleting category');
+                }
+            }
+        });
+    });
+};
+
+const setupCategoryModalListeners = () => {
+    const modal = document.getElementById('category-modal');
+    const form = document.getElementById('category-form');
+    const closeBtn = document.getElementById('close-category-modal');
+    const cancelBtn = document.getElementById('cancel-category-modal');
+    const typeInput = document.getElementById('category-type');
+    const segmentBtns = modal.querySelectorAll('.segment-btn');
 
     const closeModal = () => modal.remove();
 
@@ -280,7 +530,7 @@ const setupModalListeners = () => {
         if (e.target === modal) closeModal();
     });
 
-    // Segmented Control Logic
+    // Type Toggle
     segmentBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             segmentBtns.forEach(b => b.classList.remove('active'));
@@ -289,48 +539,98 @@ const setupModalListeners = () => {
         });
     });
 
+    // Form Submit
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
-        const mode = form.dataset.mode;
-        
+        const categoryData = {
+            name: formData.get('name'),
+            type: formData.get('type'),
+            color: formData.get('color')
+        };
+
+        try {
+            if (form.dataset.mode === 'edit') {
+                await updateCategory(form.dataset.id, categoryData);
+            } else {
+                await addCategory(categoryData);
+            }
+            closeModal();
+        } catch (error) {
+            alert('Error saving category');
+        }
+    });
+};
+
+const setupModalListeners = () => {
+    const modal = document.getElementById('transaction-modal');
+    const form = document.getElementById('transaction-form');
+    const closeBtn = document.getElementById('close-modal');
+    const cancelBtn = document.getElementById('cancel-modal');
+    const typeInput = document.getElementById('transaction-type');
+    const segmentBtns = modal.querySelectorAll('.segment-btn');
+
+    const closeModal = () => modal.remove();
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Type Toggle
+    segmentBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            segmentBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            typeInput.value = btn.dataset.value;
+        });
+    });
+
+    // Form Submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
         const transaction = {
-            type: typeInput.value,
-            amount: formData.get('amount'),
+            type: typeInput.value, // Use typeInput.value as updated by segment buttons
+            amount: parseFloat(formData.get('amount')),
             category: formData.get('category'),
             date: formData.get('date'),
             description: formData.get('description')
         };
 
         try {
-            if (mode === 'edit') {
-                const id = form.dataset.id;
-                await updateTransaction(id, transaction);
+            if (form.dataset.mode === 'edit') {
+                await updateTransaction(form.dataset.id, transaction);
             } else {
                 await addTransaction(transaction);
             }
             closeModal();
         } catch (error) {
-            alert("Error saving transaction: " + error.message);
+            alert('Error saving transaction');
         }
     });
 };
 
 const setupSettingsListeners = () => {
-    // Load saved preferences
     const currencySelect = document.getElementById('currency-select');
     const emailNotifications = document.getElementById('email-notifications');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const exportPdfBtn = document.getElementById('export-pdf-btn');
+    const deleteAccountBtn = document.getElementById('delete-account-btn');
+    const changePasswordForm = document.getElementById('change-password-form');
     
+    // Currency
     if (currencySelect) {
         currencySelect.value = getCurrencyPreference();
         currencySelect.addEventListener('change', (e) => {
             saveCurrencyPreference(e.target.value);
-            alert(`Currency updated to ${e.target.value}. Refresh the page to see changes.`);
+            alert('Currency updated to ' + e.target.value + '. Refresh the page to see changes.');
         });
     }
 
+    // Email Notifications
     if (emailNotifications && currentUser) {
-        // Load from Firestore
         import('./settings.js').then(async (settings) => {
             const prefs = await settings.getUserPreferences(currentUser.uid);
             emailNotifications.checked = prefs.emailNotifications !== false;
@@ -338,8 +638,6 @@ const setupSettingsListeners = () => {
 
         emailNotifications.addEventListener('change', async (e) => {
             saveEmailNotificationPreference(e.target.checked);
-            
-            // Save to Firestore
             if (currentUser) {
                 const { getUserPreferences, saveUserPreferences } = await import('./settings.js');
                 const prefs = await getUserPreferences(currentUser.uid);
@@ -349,202 +647,70 @@ const setupSettingsListeners = () => {
         });
     }
 
-    // Change Password
-    const changePasswordBtn = document.getElementById('change-password-btn');
-    if (changePasswordBtn) {
-        changePasswordBtn.addEventListener('click', () => {
-            showChangePasswordModal();
-        });
-    }
-
-    // Export CSV
-    const exportCsvBtn = document.getElementById('export-csv-btn');
+    // Exports
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener('click', () => {
             exportToCSV(currentTransactions);
         });
     }
 
-    // Export PDF
-    const exportPdfBtn = document.getElementById('export-pdf-btn');
     if (exportPdfBtn) {
         exportPdfBtn.addEventListener('click', () => {
-            exportToPDF(currentTransactions);
+            exportToPDF(currentTransactions, currentUser);
         });
     }
 
     // Delete Account
-    const deleteAccountBtn = document.getElementById('delete-account-btn');
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener('click', async () => {
-            const confirmed = confirm(
-                'Are you absolutely sure you want to delete your account?\n\n' +
-                'This will permanently delete:\n' +
-                '- Your account\n' +
-                '- All your transactions\n' +
-                '- All your data\n\n' +
-                'This action CANNOT be undone!'
-            );
-
-            if (confirmed) {
-                const doubleConfirm = prompt('Type "DELETE" to confirm account deletion:');
-                if (doubleConfirm === 'DELETE') {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                const password = prompt("Please enter your password to confirm deletion:");
+                if (password) {
                     try {
-                        // Delete all user transactions first
-                        const { collection, query, where, getDocs, deleteDoc, doc } = await import(
-                            "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-                        );
-                        const { db, auth } = await import('./firebase-config.js');
-                        
-                        const q = query(
-                            collection(db, 'transactions'),
-                            where('userId', '==', auth.currentUser.uid)
-                        );
-                        const snapshot = await getDocs(q);
-                        const deletePromises = snapshot.docs.map(docSnapshot => 
-                            deleteDoc(doc(db, 'transactions', docSnapshot.id))
-                        );
-                        await Promise.all(deletePromises);
-
-                        // Delete user account
-                        await deleteUserAccount();
-                        alert('Your account has been deleted successfully.');
+                        await deleteUserAccount(password);
+                        alert('Your account has been deleted.');
+                        navigateTo('login');
                     } catch (error) {
-                        if (error.code === 'auth/requires-recent-login') {
-                            alert('For security reasons, please log out and log back in before deleting your account.');
-                        } else {
-                            alert('Error deleting account: ' + error.message);
-                        }
+                        alert('Error deleting account: ' + error.message);
                     }
                 }
             }
         });
     }
-};
 
-const showChangePasswordModal = () => {
-    const modalHtml = `
-        <div class="modal-overlay" id="change-password-modal">
-            <div class="modal">
-                <div class="modal-header">
-                    <div>
-                        <h3 class="modal-title">Change Password</h3>
-                        <p style="color: var(--text-medium); font-size: 0.875rem; margin-top: 0.25rem;">Update your account password</p>
-                    </div>
-                    <button class="close-btn" id="close-password-modal">&times;</button>
-                </div>
-                <form id="change-password-form">
-                    <div class="modal-body">
-                        <div class="input-group">
-                            <label class="input-label">Current Password *</label>
-                            <div class="input-with-icon">
-                                <input type="password" id="current-password" class="input-field" required>
-                                <button type="button" class="password-toggle" data-target="current-password" aria-label="Toggle password visibility">
-                                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+    // Change Password
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
 
-                        <div class="input-group">
-                            <label class="input-label">New Password *</label>
-                            <div class="input-with-icon">
-                                <input type="password" id="new-password" class="input-field" minlength="6" required>
-                                <button type="button" class="password-toggle" data-target="new-password" aria-label="Toggle password visibility">
-                                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+            if (newPassword !== confirmPassword) {
+                alert("New passwords do not match.");
+                return;
+            }
 
-                        <div class="input-group">
-                            <label class="input-label">Confirm New Password *</label>
-                            <div class="input-with-icon">
-                                <input type="password" id="confirm-password" class="input-field" minlength="6" required>
-                                <button type="button" class="password-toggle" data-target="confirm-password" aria-label="Toggle password visibility">
-                                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" id="cancel-password-modal" style="border: 1px solid var(--border-color);">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Change Password</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    const modal = document.getElementById('change-password-modal');
-    const closeBtn = document.getElementById('close-password-modal');
-    const cancelBtn = document.getElementById('cancel-password-modal');
-    const form = document.getElementById('change-password-form');
-
-    const closeModal = () => modal.remove();
-
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // Password visibility toggles
-    const toggleButtons = modal.querySelectorAll('.password-toggle');
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetId = button.dataset.target;
-            const passwordInput = document.getElementById(targetId);
-            const type = passwordInput.type === 'password' ? 'text' : 'password';
-            passwordInput.type = type;
-            
-            // Toggle eye icon
-            const eyeIcon = button.querySelector('.eye-icon');
-            if (type === 'text') {
-                eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-            } else {
-                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            try {
+                await changePassword(currentPassword, newPassword);
+                alert("Password changed successfully.");
+                changePasswordForm.reset();
+            } catch (error) {
+                alert("Error changing password: " + error.message);
             }
         });
-    });
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const currentPassword = document.getElementById('current-password').value;
-        const newPassword = document.getElementById('new-password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-
-        if (newPassword !== confirmPassword) {
-            alert('New passwords do not match!');
-            return;
-        }
-
-        try {
-            await changePassword(currentPassword, newPassword);
-            alert('Password changed successfully!');
-            closeModal();
-        } catch (error) {
-            if (error.message.includes('Google sign-in')) {
-                alert(error.message);
-            } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                alert('Current password is incorrect.');
-            } else if (error.code === 'auth/weak-password') {
-                alert('New password is too weak. Please use at least 6 characters.');
-            } else {
-                alert('Error changing password: ' + error.message);
-            }
-        }
-    });
+    }
 };
+
+// Init
+subscribeToAuthChanges((user) => {
+    currentUser = user;
+    if (user) {
+        navigateTo('dashboard');
+    } else {
+        navigateTo('login');
+    }
+});
 
 // Initialize App
 console.log("Initializing App...");
