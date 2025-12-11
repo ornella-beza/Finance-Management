@@ -72,7 +72,9 @@ export const subscribeToCategories = (callback) => {
         
         // If no categories exist, initialize defaults
         if (categories.length === 0) {
-            initializeDefaultCategories(user.uid);
+            initializeDefaultCategories(user.uid).then(() => {
+                // The subscription will automatically trigger again with the new categories
+            });
         } else {
             callback(categories);
         }

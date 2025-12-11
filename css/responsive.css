@@ -1,0 +1,349 @@
+/* Mobile-First Responsive Design */
+
+/* Mobile Sidebar Toggle */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Tablet Styles (768px - 1024px) */
+@media (max-width: 1024px) {
+    /* Dashboard Stats */
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Analytics Charts */
+    .analytics-charts {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Categories Sections */
+    .categories-sections {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Transactions Stats */
+    .transactions-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Summary Stats */
+    .summary-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Filters */
+    .filters-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Mobile Styles (max-width: 768px) */
+@media (max-width: 768px) {
+    /* Show mobile menu button */
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    /* Hide sidebar by default on mobile */
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        width: 250px;
+    }
+    
+    .sidebar.open {
+        left: 0;
+    }
+    
+    .mobile-overlay.show {
+        display: block;
+    }
+    
+    /* Adjust main wrapper */
+    .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Header adjustments */
+    .top-header {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .header-title {
+        font-size: 1.25rem;
+    }
+    
+    .user-info {
+        display: none;
+    }
+    
+    /* Page content padding */
+    .main-content,
+    .analytics-page,
+    .categories-page,
+    .transactions-page {
+        padding: 1rem;
+    }
+    
+    /* Headers */
+    .analytics-header,
+    .categories-header,
+    .transactions-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    /* Stats cards */
+    .dashboard-stats,
+    .analytics-stats,
+    .transactions-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Transaction items */
+    .transaction-item,
+    .transaction-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .transaction-right {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row;
+    }
+    
+    /* Category items */
+    .category-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .category-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    /* Modal adjustments */
+    .modal {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+        max-height: calc(100vh - 2rem);
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+    
+    /* Form adjustments */
+    .segmented-control {
+        flex-direction: column;
+    }
+    
+    .segment-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Chart containers */
+    .chart-container {
+        height: 250px;
+    }
+    
+    /* Settings adjustments */
+    .settings-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Auth page adjustments */
+    .auth-wrapper {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 2rem;
+    }
+    
+    .auth-info {
+        text-align: center;
+        max-width: 100%;
+    }
+    
+    .auth-info h1 {
+        font-size: 2rem;
+    }
+    
+    .features-list {
+        display: none;
+    }
+    
+    .auth-card-container {
+        min-width: auto;
+        width: 100%;
+        max-width: 400px;
+        padding: 1.5rem;
+    }
+}
+
+/* Small Mobile Styles (max-width: 480px) */
+@media (max-width: 480px) {
+    /* Further reduce padding */
+    .main-content,
+    .analytics-page,
+    .categories-page,
+    .transactions-page {
+        padding: 0.75rem;
+    }
+    
+    /* Smaller titles */
+    .analytics-title,
+    .categories-title,
+    .transactions-title {
+        font-size: 1.5rem;
+    }
+    
+    /* Smaller stat cards */
+    .stat-card,
+    .analytics-card {
+        padding: 1rem;
+    }
+    
+    .stat-amount,
+    .analytics-amount {
+        font-size: 1.5rem;
+    }
+    
+    /* Compact transaction items */
+    .transaction-item,
+    .transaction-row {
+        padding: 0.75rem;
+    }
+    
+    .transaction-name {
+        font-size: 0.8125rem;
+    }
+    
+    .transaction-amount {
+        font-size: 0.8125rem;
+    }
+    
+    /* Smaller buttons */
+    .btn-add,
+    .btn-add-category,
+    .btn-add-transaction {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+    
+    /* Compact filters */
+    .transactions-filters,
+    .categories-sections .category-section {
+        padding: 1rem;
+    }
+    
+    /* Auth adjustments */
+    .auth-card-container {
+        padding: 1rem;
+    }
+    
+    .auth-info h1 {
+        font-size: 1.75rem;
+    }
+    
+    /* Modal adjustments */
+    .modal {
+        margin: 0.5rem;
+        max-width: calc(100vw - 1rem);
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 0.75rem;
+    }
+}
+
+/* Landscape Mobile Styles */
+@media (max-width: 768px) and (orientation: landscape) {
+    .sidebar {
+        width: 200px;
+        left: -200px;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .main-content {
+        padding: 0.75rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .sidebar,
+    .mobile-menu-btn,
+    .user-dropdown,
+    .action-btn,
+    .btn-add,
+    .btn-add-category,
+    .btn-add-transaction,
+    .btn-export {
+        display: none !important;
+    }
+    
+    .main-wrapper {
+        margin-left: 0;
+    }
+    
+    .main-content {
+        padding: 0;
+    }
+    
+    .dashboard-stats,
+    .analytics-stats,
+    .transactions-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

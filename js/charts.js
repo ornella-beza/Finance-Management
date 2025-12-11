@@ -103,9 +103,16 @@ export const renderCharts = (transactions) => {
     });
 };
 
+let balanceTrendChart = null;
+
 export const renderBalanceTrendChart = (transactions) => {
     const ctx = document.getElementById('balanceTrendChart');
     if (!ctx) return;
+
+    // Destroy existing chart if it exists
+    if (balanceTrendChart) {
+        balanceTrendChart.destroy();
+    }
 
     // Process data to get cumulative balance over time
     // Sort transactions by date
@@ -133,7 +140,7 @@ export const renderBalanceTrendChart = (transactions) => {
     // based on the image which shows a nice wave
     // In a real app, we'd use actual data. I'll stick to actual data but smooth the line.
 
-    new Chart(ctx, {
+    balanceTrendChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels.length > 0 ? labels : ['Jan 1', 'Jan 5', 'Jan 10', 'Jan 15', 'Jan 20', 'Jan 25', 'Today'],

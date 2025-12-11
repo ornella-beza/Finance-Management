@@ -84,13 +84,16 @@ export const exportToCSV = (transactions) => {
     const headers = ['Date', 'Description', 'Category', 'Type', 'Amount'];
     
     // Convert transactions to CSV rows
-    const rows = transactions.map(t => [
-        t.date,
-        `"${t.description}"`, // Wrap in quotes to handle commas
-        t.category,
-        t.type,
-        t.amount
-    ]);
+    const rows = transactions.map(t => {
+        const date = t.date.toDate ? t.date.toDate() : new Date(t.date);
+        return [
+            date.toLocaleDateString(),
+            `"${t.description || 'No description'}"`, // Wrap in quotes to handle commas
+            t.category || 'Other',
+            t.type,
+            t.amount
+        ];
+    });
 
     // Combine headers and rows
     const csvContent = [
@@ -134,13 +137,16 @@ export const exportToPDF = (transactions) => {
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
 
     // Prepare table data
-    const tableData = transactions.map(t => [
-        new Date(t.date).toLocaleDateString(),
-        t.description,
-        t.category,
-        t.type.charAt(0).toUpperCase() + t.type.slice(1),
-        formatCurrency(t.amount, currency)
-    ]);
+    const tableData = transactions.map(t => {
+        const date = t.date.toDate ? t.date.toDate() : new Date(t.date);
+        return [
+            date.toLocaleDateString(),
+            t.description || 'No description',
+            t.category || 'Other',
+            t.type.charAt(0).toUpperCase() + t.type.slice(1),
+            formatCurrency(t.amount, currency)
+        ];
+    });
 
     // Add table using autoTable plugin
     doc.autoTable({

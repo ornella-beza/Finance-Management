@@ -10,6 +10,7 @@ let currentTransactions = [];
 let currentCategories = [];
 let unsubscribeTransactions = null;
 let unsubscribeCategories = null;
+let isDataLoaded = { transactions: false, categories: false };
 
 // Routing Logic
 const routes = {
@@ -33,13 +34,19 @@ const routes = {
         if (unsubscribeTransactions) unsubscribeTransactions();
         unsubscribeTransactions = subscribeToTransactions((transactions) => {
             currentTransactions = transactions;
-            updateDashboardView();
+            isDataLoaded.transactions = true;
+            if (isDataLoaded.categories) {
+                updateDashboardView();
+            }
         });
 
         if (unsubscribeCategories) unsubscribeCategories();
         unsubscribeCategories = subscribeToCategories((categories) => {
             currentCategories = categories;
-            updateDashboardView();
+            isDataLoaded.categories = true;
+            if (isDataLoaded.transactions) {
+                updateDashboardView();
+            }
         });
     }
 };
@@ -133,17 +140,21 @@ const setupDashboardListeners = () => {
     // Navigation
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navItems.forEach(nav => nav.classList.remove('active'));
-            item.classList.add('active');
-            updateDashboardView(item.dataset.page);
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const page = item.dataset.page;
+            if (page) {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                updateDashboardView(page);
+            }
         });
     });
 
     // Logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
+    const logoutBtns = document.querySelectorAll('#logout-btn');
+    logoutBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
             try {
                 if (unsubscribeTransactions) unsubscribeTransactions();
                 if (unsubscribeCategories) unsubscribeCategories();
@@ -153,6 +164,24 @@ const setupDashboardListeners = () => {
             } catch (error) {
                 console.error("Logout error:", error);
             }
+        });
+    });
+
+    // Profile Settings
+    const profileSettingsBtn = document.getElementById('profile-settings');
+    if (profileSettingsBtn) {
+        profileSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateDashboardView('settings');
+        });
+    }
+
+    // Account Settings
+    const accountSettingsBtn = document.getElementById('account-settings');
+    if (accountSettingsBtn) {
+        accountSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateDashboardView('settings');
         });
     }
 
@@ -171,11 +200,36 @@ const setupDashboardListeners = () => {
             }
         });
     }
+
+    // Mobile Menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    
+    if (mobileMenuBtn && sidebar && mobileOverlay) {
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            mobileOverlay.classList.toggle('show');
+        });
+        
+        mobileOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            mobileOverlay.classList.remove('show');
+        });
+        
+        // Close mobile menu when nav item is clicked
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                mobileOverlay.classList.remove('show');
+            });
+        });
+    }
 };
 
 const updateDashboardView = (page = null) => {
     const mainView = document.getElementById('main-view');
-    const headerTitle = document.getElementById('header-title');
+    const headerTitle = document.querySelector('.header-title');
     if (!mainView) return;
 
     // Determine current page if not provided
@@ -189,21 +243,27 @@ const updateDashboardView = (page = null) => {
         headerTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1);
     }
 
+    // Update navigation active state
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(nav => {
+        nav.classList.remove('active');
+        if (nav.dataset.page === page) {
+            nav.classList.add('active');
+        }
+    });
+
     switch(page) {
         case 'dashboard':
             mainView.innerHTML = renderDashboardContent(currentTransactions, currentUser);
-            // We need to import renderBalanceTrendChart from charts.js
-            // Since charts.js is a global script (no export), we assume the function is available globally 
-            // OR we need to update charts.js to be a module. 
-            // The current charts.js setup seems to be using ES modules based on previous edits (export const).
-            // So we should import it.
             import('./charts.js').then(chartsModule => {
                 chartsModule.renderBalanceTrendChart(currentTransactions);
             });
+            setupDashboardTransactionListeners();
             break;
         case 'transactions':
             mainView.innerHTML = renderTransactions(currentTransactions);
             setupTransactionListeners();
+            populateCategoryFilter();
             break;
         case 'categories':
             mainView.innerHTML = renderCategories(currentCategories);
@@ -211,7 +271,6 @@ const updateDashboardView = (page = null) => {
             break;
         case 'analytics':
             mainView.innerHTML = renderAnalytics(currentTransactions);
-            // Render charts after DOM is ready
             setTimeout(() => {
                 renderCharts(currentTransactions);
             }, 100);
@@ -399,6 +458,33 @@ const renderTransactionsView = (container) => {
     renderList(currentTransactions);
 };
 
+const populateCategoryFilter = () => {
+    const categoryFilter = document.getElementById('category-filter');
+    if (categoryFilter && currentCategories.length > 0) {
+        // Clear existing options except "All Categories"
+        categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+        
+        // Add current categories
+        currentCategories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.name;
+            option.textContent = category.name;
+            categoryFilter.appendChild(option);
+        });
+    }
+};
+
+const setupDashboardTransactionListeners = () => {
+    // Add Transaction buttons on dashboard
+    const addTransactionBtns = document.querySelectorAll('#add-transaction-btn, #add-first-transaction');
+    addTransactionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.body.insertAdjacentHTML('beforeend', renderModal(null, currentCategories));
+            setupModalListeners();
+        });
+    });
+};
+
 const setupTransactionListeners = () => {
     // Add Transaction Button
     const addBtn = document.getElementById('add-transaction-btn');
@@ -409,13 +495,20 @@ const setupTransactionListeners = () => {
         });
     }
 
+    // Add first transaction button
+    const addFirstBtn = document.getElementById('add-first-transaction');
+    if (addFirstBtn) {
+        addFirstBtn.addEventListener('click', () => {
+            document.body.insertAdjacentHTML('beforeend', renderModal(null, currentCategories));
+            setupModalListeners();
+        });
+    }
+
     // Export CSV Button
     const exportBtn = document.getElementById('export-csv-btn');
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
-            import('./settings.js').then(module => {
-                module.exportToCSV(currentTransactions);
-            });
+            exportToCSV(currentTransactions);
         });
     }
 
@@ -423,7 +516,7 @@ const setupTransactionListeners = () => {
     const searchInput = document.getElementById('search-transactions');
     const typeFilter = document.getElementById('type-filter');
     const categoryFilter = document.getElementById('category-filter');
-    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    const clearFiltersBtn = document.getElementById('clear-filters');
 
     const filterTransactions = () => {
         const query = searchInput ? searchInput.value.toLowerCase() : '';
@@ -431,7 +524,8 @@ const setupTransactionListeners = () => {
         const category = categoryFilter ? categoryFilter.value : 'all';
 
         const filtered = currentTransactions.filter(t => {
-            const matchesSearch = !query || t.description.toLowerCase().includes(query);
+            const description = (t.description || '').toLowerCase();
+            const matchesSearch = !query || description.includes(query) || (t.category || '').toLowerCase().includes(query);
             const matchesType = type === 'all' || t.type === type;
             const matchesCategory = category === 'all' || t.category === category;
             return matchesSearch && matchesType && matchesCategory;
@@ -519,8 +613,6 @@ const setupCategoryModalListeners = () => {
     const form = document.getElementById('category-form');
     const closeBtn = document.getElementById('close-category-modal');
     const cancelBtn = document.getElementById('cancel-category-modal');
-    const typeInput = document.getElementById('category-type');
-    const segmentBtns = modal.querySelectorAll('.segment-btn');
 
     const closeModal = () => modal.remove();
 
@@ -528,15 +620,6 @@ const setupCategoryModalListeners = () => {
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
-    });
-
-    // Type Toggle
-    segmentBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            segmentBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            typeInput.value = btn.dataset.value;
-        });
     });
 
     // Form Submit
@@ -591,12 +674,24 @@ const setupModalListeners = () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
+        
+        // Validate required fields
+        const amount = formData.get('amount');
+        const category = formData.get('category');
+        const date = formData.get('date');
+        const description = formData.get('description');
+        
+        if (!amount || !category || !date || !description) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
         const transaction = {
-            type: typeInput.value, // Use typeInput.value as updated by segment buttons
-            amount: parseFloat(formData.get('amount')),
-            category: formData.get('category'),
-            date: formData.get('date'),
-            description: formData.get('description')
+            type: typeInput.value,
+            amount: parseFloat(amount),
+            category: category,
+            date: new Date(date),
+            description: description
         };
 
         try {
@@ -607,7 +702,8 @@ const setupModalListeners = () => {
             }
             closeModal();
         } catch (error) {
-            alert('Error saving transaction');
+            console.error('Error saving transaction:', error);
+            alert('Error saving transaction: ' + error.message);
         }
     });
 };

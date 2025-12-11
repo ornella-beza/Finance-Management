@@ -1,0 +1,68 @@
+/* Settings Page Styles */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 1rem;
+}
+
+/* Danger Zone */
+.danger-zone {
+    border: 1px solid #fecaca !important;
+    background: #fef2f2 !important;
+}
+
+.danger-zone .settings-section-title {
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.danger-zone .settings-section-title::before {
+    content: "⚠️";
+    font-size: 1.25rem;
+}
+
+.danger-warning {
+    color: #7f1d1d;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.btn-delete-account {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+}
+
+.btn-delete-account:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+}
+
+.btn-delete-account:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+}
+
+.btn-delete-account svg {
+    width: 18px;
+    height: 18px;
+}
